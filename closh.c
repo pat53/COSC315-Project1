@@ -69,11 +69,22 @@ int main() {
 		//parallel code
 	}
 	else {
-		//sequential code
+	    for (int i=0; i<count; i++) {
+	        int rc = fork();
+	        if ( rc < 0) {
+	            exit(1);
+	        } else if (rc == 0) {
+	            execvp(cmdTokens[0], cmdTokens); // replaces the current process with the given program
+	        }
+	        else {
+	            int rc_wait = wait(NULL);
+	        }
+	    }
 	}
-        // doesn't return unless the calling failed
-        printf("Can't execute %s\n", cmdTokens[0]); // only reached if running the program failed
-        exit(1);        
+
     }
+    // doesn't return unless the calling failed
+    printf("Can't execute %s\n", cmdTokens[0]); // only reached if running the program failed
+    exit(1);        
 }
 
