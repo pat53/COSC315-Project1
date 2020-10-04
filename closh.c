@@ -1,5 +1,5 @@
 // closh.c - COSC 315, Winter 2020
-// YOUR NAME HERE
+// Nate
 
 #include <stdio.h>
 #include <unistd.h>
@@ -9,6 +9,13 @@
 
 #define TRUE 1
 #define FALSE 0
+
+int rc; //global for use with killChild()
+
+void killChild(int child){
+	printf("Timeout killing child\n"); //prints pid 
+	kill(rc, SIGKILL);
+}
 
 // tokenize the command string into arguments - do not modify
 void readCmdTokens(char* cmd, char** cmdTokens) {
@@ -34,6 +41,7 @@ int main() {
     int count; // number of times to execute command
     int parallel; // whether to run in parallel or sequentially
     int timeout; // max seconds to run set of commands (parallel) or each command (sequentially)
+
     
     while (TRUE) { // main shell input loop
         
@@ -65,15 +73,53 @@ int main() {
         
         // just executes the given command once - REPLACE THIS CODE WITH YOUR OWN
         //execvp(cmdTokens[0], cmdTokens); // replaces the current process with the given program
+
+        signal(SIGALRM, killChild); //alarm to kill children
+
 	if (parallel) {
-		//parallel code
+		for (int i=0; i<count; i++){
+			rc = fork(); 	
+		if (rc<0){
+			exit(1); // if fork fails
+		}else if(rc == 0){
+			printf("pid:%d\n",(int) getpid()); //prints pid
+			execvp(cmdTokens[0], cmdTokens); //executes
+			exit(0);
+		}else{			
+		if(i == 0){
+			alarm(timeout);
+
+			}}
+		
+		}
+		sleep(timeout + 1); //Allows for alarm to end before killing to track timeout
+		exit(0);
 	}
 	else {
-		//sequential code
+
+		for (int i=0; i<count; i++){
+			rc = fork(); 
+		if (rc<0){
+			exit(1); // if fork fails
+		}else if(rc == 0){
+			printf("Child pid:%d\n",(int) getpid()); //prints pid 
+			execvp(cmdTokens[0], cmdTokens); //executes
+			exit(0);
+		}else{
+			alarm(timeout);
+			wait(NULL); //waits for process to finish before proceeding
+			alarm(0); //resets alarm timer after finishes waiting
+
+		}
+		}
+		exit(0);
+
 	}
         // doesn't return unless the calling failed
         printf("Can't execute %s\n", cmdTokens[0]); // only reached if running the program failed
         exit(1);        
     }
 }
+
+
 
