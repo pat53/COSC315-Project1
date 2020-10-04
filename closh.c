@@ -84,7 +84,6 @@ int main() {
 			exit(1); // if fork fails
 		}else if(rc == 0){
 			printf("pid:%d\n",(int) getpid()); //prints pid
-			wait(NULL);
 			execvp(cmdTokens[0], cmdTokens); //executes
 			exit(0);
 		}else{			
@@ -105,7 +104,6 @@ int main() {
 			exit(1); // if fork fails
 		}else if(rc == 0){
 			printf("Child pid:%d\n",(int) getpid()); //prints pid 
-			wait(NULL);
 			execvp(cmdTokens[0], cmdTokens); //executes
 			exit(0);
 		}else{
