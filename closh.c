@@ -6,6 +6,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <signal.h>
+#include <sys/wait.h>
 
 #define TRUE 1
 #define FALSE 0
