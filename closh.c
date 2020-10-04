@@ -11,11 +11,16 @@
 #define TRUE 1
 #define FALSE 0
 
-int rc; //global for use with killChild()
+int rc[]; //global for use with killChild()
+int amount;
 
-void killChild(int child){
-	printf("Timeout killing child\n"); //prints pid 
-	kill(rc, SIGKILL);
+
+void killChildren(){
+
+	for (int i = 0; i < amount; i++){
+	printf("Timeout killing child %d\n", rc[i]); //prints pid 
+	kill(rc[i], SIGKILL);
+	}
 }
 
 // tokenize the command string into arguments - do not modify
@@ -75,14 +80,15 @@ int main() {
         // just executes the given command once - REPLACE THIS CODE WITH YOUR OWN
         //execvp(cmdTokens[0], cmdTokens); // replaces the current process with the given program
 
-        signal(SIGALRM, killChild); //alarm to kill children
+        signal(SIGALRM, killChildren); //alarm to kill children
 
 	if (parallel) {
+	amount = count; //treats rc[] as an array, and when killChildren is called it loops
 	    int pid, status;
             for (int i=0; i<count; i++) {
-                rc = fork();
-		if (rc<0) exit(1); // if fork fails
-                else if (rc == 0) {
+                rc[i] = fork();
+		if (rc[i]<0) exit(1); // if fork fails
+                else if (rc[i] == 0) {
                     printf("pid:%d\n",(int) getpid()); //prints pid
                     execvp(cmdTokens[0], cmdTokens); //executes
                     exit(0);
@@ -96,11 +102,12 @@ int main() {
             exit(0);
 	}
 	else {
+		amount = 1; //treating rc[0] as just int not array, so when killchildren is called it only runs once
 		for (int i=0; i<count; i++){
-			rc = fork(); 
-		if (rc<0){
+			rc[0] = fork(); 
+		if (rc[0]<0){
 			exit(1); // if fork fails
-		}else if(rc == 0){
+		}else if(rc[0] == 0){
 			printf("Child pid:%d\n",(int) getpid()); //prints pid 
 			execvp(cmdTokens[0], cmdTokens); //executes
 			exit(0);
