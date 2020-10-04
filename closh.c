@@ -78,26 +78,24 @@ int main() {
         signal(SIGALRM, killChild); //alarm to kill children
 
 	if (parallel) {
-		for (int i=0; i<count; i++){
-			rc = fork(); 	
-		if (rc<0){
-			exit(1); // if fork fails
-		}else if(rc == 0){
-			printf("pid:%d\n",(int) getpid()); //prints pid
-			execvp(cmdTokens[0], cmdTokens); //executes
-			exit(0);
-		}else{			
-		if(i == 0){
-			alarm(timeout);
-
-			}}
-		
-		}
-		sleep(timeout + 1); //Allows for alarm to end before killing to track timeout
-		exit(0);
+	    int pid, status;
+            for (int i=0; i<count; i++) {
+                rc = fork();
+		if (rc<0) exit(1); // if fork fails
+                else if (rc == 0) {
+                    printf("pid:%d\n",(int) getpid()); //prints pid
+                    execvp(cmdTokens[0], cmdTokens); //executes
+                    exit(0);
+                }else{			
+                	//Parent will execute
+                	alarm(timeout);
+                }
+	    }
+            // Wait for all child processes to exit
+            while ((pid=waitpid(-1,&status,0)) != -1);
+            exit(0);
 	}
 	else {
-
 		for (int i=0; i<count; i++){
 			rc = fork(); 
 		if (rc<0){
