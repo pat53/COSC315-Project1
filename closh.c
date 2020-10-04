@@ -1,14 +1,22 @@
 // closh.c - COSC 315, Winter 2020
-// YOUR NAME HERE
+// Patrick
 
 #include <stdio.h>
 #include <unistd.h>
 #include <stdlib.h>
 #include <string.h>
 #include <signal.h>
+#include <sys/wait.h>
 
 #define TRUE 1
 #define FALSE 0
+
+int rc; //global for use with killChild()
+
+void killChild(int child){
+	printf("Timeout killing child\n"); //prints pid 
+	kill(rc, SIGKILL);
+}
 
 // tokenize the command string into arguments - do not modify
 void readCmdTokens(char* cmd, char** cmdTokens) {
@@ -34,6 +42,7 @@ int main() {
     int count; // number of times to execute command
     int parallel; // whether to run in parallel or sequentially
     int timeout; // max seconds to run set of commands (parallel) or each command (sequentially)
+
     
     while (TRUE) { // main shell input loop
         
@@ -65,15 +74,30 @@ int main() {
         
         // just executes the given command once - REPLACE THIS CODE WITH YOUR OWN
         //execvp(cmdTokens[0], cmdTokens); // replaces the current process with the given program
+
 	if (parallel) {
-		//parallel code
+		
 	}
 	else {
-		//sequential code
+		for(int i = 0; i < count; i++){
+			int rc = fork();
+		if(rc < 0){
+			fprintf(stderr, "fork failed \n");
+			exit(1);
+		}else if(rc == 0){
+			printf("Child: pid%d \n", (int) getpid());
+			execvp(cmdTokens[0], cmdTokens);
+			exit(0);
+		}else{
+			int rc_wait = wait(NULL);
+		}
+		
+	}
+		exit(0);
+
 	}
         // doesn't return unless the calling failed
         printf("Can't execute %s\n", cmdTokens[0]); // only reached if running the program failed
         exit(1);        
     }
 }
-
