@@ -13,8 +13,9 @@
 
 int rc; //global for use with killChild()
 
-void killChild(int child){
-	printf("Timeout killing child\n"); //prints pid 
+void killChildren(){
+
+	printf("Timeout killing child %d\n", rc); //prints pid 
 	kill(rc, SIGKILL);
 }
 
@@ -74,53 +75,40 @@ int main() {
         
         // just executes the given command once - REPLACE THIS CODE WITH YOUR OWN
         //execvp(cmdTokens[0], cmdTokens); // replaces the current process with the given program
-
-        signal(SIGALRM, killChild); //alarm to kill children
+        signal(SIGALRM, killChildren); //alarm to kill children
 
 	if (parallel) {
-		for (int i=0; i<count; i++){
-			rc = fork(); 	
-		if (rc<0){
-			exit(1); // if fork fails
-		}else if(rc == 0){
-			printf("pid:%d\n",(int) getpid()); //prints pid
-			execvp(cmdTokens[0], cmdTokens); //executes
-			
-			exit(0);
-		}else{			
-		
-			alarm(timeout);
-			wait(NULL); //waits for process to finish before proceeding
-			alarm(0);
-			}
-		
-		}
-		sleep(timeout + 1); //Allows for alarm to end before killing to track timeout
-		exit(0);
+	    int pid, status;
+            for (int i=0; i<count; i++) {
+                rc = fork();
+		if (rc<0) exit(1); // if fork fails
+                else if (rc == 0) {
+                    printf("pid:%d\n",(int) getpid()); //prints pid
+                    execvp(cmdTokens[0], cmdTokens); //executes
+		    wait(NULL);
+                }else{			
+                    alarm(timeout);
+                }
+	    }
+            // Wait for all child processes to exit
+            while ((pid=waitpid(-1,&status,0)) != -1);
 	}
 	else {
-
-		for (int i=0; i<count; i++){
-			rc = fork(); 
-		if (rc<0){
-			exit(1); // if fork fails
-		}else if(rc == 0){
-			printf("Child pid:%d\n",(int) getpid()); //prints pid 			
-			
-			execvp(cmdTokens[0], cmdTokens); //executes
-			exit(0);
-		}else{
-			alarm(timeout);
-			wait(NULL); //waits for process to finish before proceeding
-			alarm(0); //resets alarm timer after finishes waiting
-
-		}
-		}
-		exit(0);
-
+	    for (int i=0; i<count; i++){
+	        rc = fork(); 
+	        if (rc<0){
+	            exit(1); // if fork fails
+	        }else if(rc == 0){
+	            printf("Child pid:%d\n",(int) getpid()); //prints pid 
+	            execvp(cmdTokens[0], cmdTokens); //executes
+	            exit(0);
+	        }else{
+	            alarm(timeout);
+	            wait(NULL); //waits for process to finish before proceeding
+	            alarm(0); //resets alarm timer after finishes waiting
+	        }
+	    }
 	}
-        // doesn't return unless the calling failed
-        printf("Can't execute %s\n", cmdTokens[0]); // only reached if running the program failed
-        exit(1);        
     }
 }
+
