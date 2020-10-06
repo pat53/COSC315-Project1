@@ -7,8 +7,9 @@
 - Aaron Mahnic
 - Nathan Wickenheiser
 
-Due to the relatively small amount of coding required, we decided to all attempt and solve the project. We then ended up pushing Nathan's code to our master branch and collectively worked on it to try and resolve any remaining issues.
+## Design choices: 
+- Due to the relatively small amount of coding required, we decided to all attempt and solve the project. We then ended up pushing Nathan's code to our master branch and collectively worked on it to try and resolve any remaining issues.
 
-## Design choices:
 
 ## Issues with implementation:
+- The code ran as expeted when executing the processes sequentially. When execting the processes parallel. When running the 'sleephello' script, we did not get the expected output. If given more time we would of created a better plan on implementing our code and had a greater discussion on what might be casuing this issue. 
