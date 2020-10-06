@@ -83,7 +83,7 @@ int main() {
                 rc = fork();
 		if (rc<0) exit(1); // if fork fails
                 else if (rc == 0) {
-                    printf("pid:%d\n",(int) getpid()); //prints pid
+                    printf("Child pid:%d\n",(int) getpid()); //prints pid
                     execvp(cmdTokens[0], cmdTokens); //executes
 		    wait(NULL);
                 }else{			

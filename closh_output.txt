@@ -1,0 +1,34 @@
+closh> ./sleephello.sh
+  count> 5
+  [p]arallel or [s]equential> s
+  timeout> 5
+Child pid:18015
+hello
+Child pid:18018
+hello
+Child pid:18020
+hello
+Child pid:18022
+hello
+Child pid:18025
+hello
+closh> ./sleephello.sh
+  count> 3
+  [p]arallel or [s]equential> s
+  timeout> 1
+Child pid:18033
+Timeout killing child 18033
+Child pid:18035
+Timeout killing child 18035
+Child pid:18037
+Timeout killing child 18037
+closh> ./sleephello.sh
+  count> 3
+  [p]arallel or [s]equential> p
+  timeout> 5
+Child pid:18044
+Child pid:18045
+Child pid:18046
+hello
+hello
+hello
