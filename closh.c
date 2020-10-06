@@ -75,17 +75,19 @@ int main() {
         
         // just executes the given command once - REPLACE THIS CODE WITH YOUR OWN
         //execvp(cmdTokens[0], cmdTokens); // replaces the current process with the given program
-        signal(SIGALRM, killChildren); //alarm to kill children
+        
+	signal(SIGALRM, killChildren); //alarm to kill children
 
+	/* Parallel code section */ 
 	if (parallel) {
-	    int pid, status;
+	    int pid, status; //Variables to check child process state
             for (int i=0; i<count; i++) {
                 rc = fork();
 		if (rc<0) exit(1); // if fork fails
                 else if (rc == 0) {
                     printf("Child pid:%d\n",(int) getpid()); //prints pid
-                    execvp(cmdTokens[0], cmdTokens); //executes
-		    wait(NULL);
+                    execvp(cmdTokens[0], cmdTokens); //executes the command
+		    exit(0);
                 }else{			
                     alarm(timeout);
                 }
@@ -93,6 +95,8 @@ int main() {
             // Wait for all child processes to exit
             while ((pid=waitpid(-1,&status,0)) != -1);
 	}
+
+	/* Sequential code section */ 
 	else {
 	    for (int i=0; i<count; i++){
 	        rc = fork(); 
@@ -100,7 +104,7 @@ int main() {
 	            exit(1); // if fork fails
 	        }else if(rc == 0){
 	            printf("Child pid:%d\n",(int) getpid()); //prints pid 
-	            execvp(cmdTokens[0], cmdTokens); //executes
+	            execvp(cmdTokens[0], cmdTokens); //executes the command
 	            exit(0);
 	        }else{
 	            alarm(timeout);
