@@ -12,4 +12,4 @@
 
 
 ## Issues with implementation:
-- The code ran as expeted when executing the processes sequentially. When execting the processes parallel. When running the 'sleephello' script, we did not get the expected output. If given more time we would of created a better plan on implementing our code and had a greater discussion on what might be casuing this issue. 
+- The code ran as expeted when executing the processes sequentially. When execting the processes parallel. When running the 'sleephello' script, we did not get the expected output because it is exiting closh before child processes completed. If given more time we would of created a better plan on implementing our code and had a greater discussion on what might be casuing this issue. 
